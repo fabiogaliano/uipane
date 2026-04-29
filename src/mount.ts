@@ -15,7 +15,7 @@ export function initPane(): () => void {
 
   const host = document.createElement("div");
   host.id = "uipane-root";
-  host.style.cssText = "position:fixed;top:0;left:0;width:0;height:0;overflow:visible;z-index:2147483647;pointer-events:none;";
+  host.style.cssText = "position:fixed;top:0;left:0;width:0;height:0;overflow:visible;z-index:2147483645;pointer-events:none;";
   document.documentElement.appendChild(host);
 
   const shadow = host.attachShadow({ mode: "open" });
