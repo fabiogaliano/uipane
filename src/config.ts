@@ -40,6 +40,8 @@ export function flattenValues(
       case "action":
         values[path] = entry;
         break;
+      case "slot":
+        break;
       case "select": {
         const first = entry.options[0];
         const firstValue =
@@ -92,6 +94,8 @@ function controlToMeta(
       return { type: "color", path, label };
     case "text":
       return { type: "text", path, label, placeholder: entry.placeholder };
+    case "slot":
+      return { type: "slot", path, label: entry.label ?? "" };
     case "spring":
       return { type: "transition", path, label };
     case "easing":

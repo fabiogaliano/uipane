@@ -10,6 +10,7 @@ import { Action, ColorPicker, TextInput, Toggle } from "./Controls.tsx";
 import { Folder } from "./Folder.tsx";
 import { Select } from "./Select.tsx";
 import { Slider } from "./Slider.tsx";
+import { Slot } from "./Slot.tsx";
 import { TransitionControl } from "./Transition.tsx";
 
 type PanelProps = {
@@ -52,6 +53,16 @@ export function Panel({ panel, values, portalContainer }: PanelProps) {
             key={control.path}
             label={control.label}
             onClick={() => PaneStore.triggerAction(panel.id, control.path)}
+          />
+        );
+
+      case "slot":
+        return (
+          <Slot
+            key={control.path}
+            panelId={panel.id}
+            path={control.path}
+            label={control.label}
           />
         );
 

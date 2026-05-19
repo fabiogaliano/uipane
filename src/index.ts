@@ -1,6 +1,7 @@
 // React adapter
 export { usePane } from "./react/usePane.ts";
 export { PaneRoot } from "./react/PaneRoot.ts";
+export { PaneSlot } from "./react/PaneSlot.tsx";
 export { useActiveTab } from "./react/useActiveTab.ts";
 
 // Core store (for programmatic access)
@@ -14,6 +15,7 @@ export type {
   SliderConfig,
   ToggleConfig,
   ActionConfig,
+  SlotConfig,
   SelectConfig,
   SelectOption,
   ColorConfig,

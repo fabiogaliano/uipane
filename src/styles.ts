@@ -785,6 +785,32 @@ export const STYLES = /* css */ `
 }
 
 /* ------------------------------------------------------------------ */
+/* Slot                                                               */
+/* ------------------------------------------------------------------ */
+
+.up-slot-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.up-slot-wrap-empty {
+  display: none;
+}
+
+.up-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.up-slot-label {
+  font-size: 11px;
+  color: var(--up-text-3);
+  padding: 0 2px;
+}
+
+/* ------------------------------------------------------------------ */
 /* Panel section                                                      */
 /* ------------------------------------------------------------------ */
 

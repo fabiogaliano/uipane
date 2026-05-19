@@ -20,6 +20,11 @@ export type ActionConfig = {
   label?: string;
 };
 
+export type SlotConfig = {
+  type: "slot";
+  label?: string;
+};
+
 export type SelectOption = string | { value: string; label: string };
 
 export type SelectConfig = {
@@ -66,6 +71,7 @@ export type ControlConfig =
   | SliderConfig
   | ToggleConfig
   | ActionConfig
+  | SlotConfig
   | SelectConfig
   | ColorConfig
   | TextConfig
@@ -98,7 +104,7 @@ type ResolveControl<T extends ControlConfig> = T extends SliderConfig
                 : never;
 
 export type ResolvedValues<T extends PaneConfig> = {
-  [K in keyof T as T[K] extends ActionConfig ? never : K]: ResolveControl<
+  [K in keyof T as T[K] extends ActionConfig | SlotConfig ? never : K]: ResolveControl<
     T[K]
   >;
 };
@@ -111,6 +117,7 @@ export type ControlType =
   | "slider"
   | "toggle"
   | "action"
+  | "slot"
   | "select"
   | "color"
   | "text"

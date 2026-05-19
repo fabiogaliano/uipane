@@ -162,6 +162,75 @@ describe("PaneStore", () => {
     expect(PaneStore.getTransitionMode("p1", "eased")).toBe("easing");
   });
 
+  test("setSlotNode registers and getSlotNode retrieves it", () => {
+    PaneStore.registerPanel("p1", "P1", {
+      x: { type: "slider", value: 1, min: 0, max: 10 },
+    });
+
+    const node = {} as HTMLDivElement;
+    PaneStore.setSlotNode("p1", "mySlot", node);
+    expect(PaneStore.getSlotNode("p1", "mySlot")).toBe(node);
+  });
+
+  test("setSlotNode(null) removes the node", () => {
+    PaneStore.registerPanel("p1", "P1", {
+      x: { type: "slider", value: 1, min: 0, max: 10 },
+    });
+
+    const node = {} as HTMLDivElement;
+    PaneStore.setSlotNode("p1", "mySlot", node);
+    PaneStore.setSlotNode("p1", "mySlot", null);
+    expect(PaneStore.getSlotNode("p1", "mySlot")).toBeNull();
+  });
+
+  test("subscribeSlot fires on register and unregister", () => {
+    PaneStore.registerPanel("p1", "P1", {
+      x: { type: "slider", value: 1, min: 0, max: 10 },
+    });
+
+    const listener = vi.fn();
+    const unsub = PaneStore.subscribeSlot("p1", "mySlot", listener);
+
+    const node = {} as HTMLDivElement;
+    PaneStore.setSlotNode("p1", "mySlot", node);
+    expect(listener).toHaveBeenCalledTimes(1);
+
+    PaneStore.setSlotNode("p1", "mySlot", null);
+    expect(listener).toHaveBeenCalledTimes(2);
+
+    unsub();
+  });
+
+  test("setSlotNode no-ops when value unchanged", () => {
+    PaneStore.registerPanel("p1", "P1", {
+      x: { type: "slider", value: 1, min: 0, max: 10 },
+    });
+
+    const listener = vi.fn();
+    PaneStore.subscribeSlot("p1", "mySlot", listener);
+
+    const node = {} as HTMLDivElement;
+    PaneStore.setSlotNode("p1", "mySlot", node);
+    PaneStore.setSlotNode("p1", "mySlot", node);
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
+
+  test("unregisterPanel clears slot nodes and notifies slot subscribers", () => {
+    PaneStore.registerPanel("p1", "P1", {
+      x: { type: "slider", value: 1, min: 0, max: 10 },
+    });
+
+    const node = {} as HTMLDivElement;
+    PaneStore.setSlotNode("p1", "mySlot", node);
+
+    const listener = vi.fn();
+    PaneStore.subscribeSlot("p1", "mySlot", listener);
+
+    PaneStore.unregisterPanel("p1");
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(PaneStore.getSlotNode("p1", "mySlot")).toBeNull();
+  });
+
   test("getValues returns frozen snapshot", () => {
     PaneStore.registerPanel("p1", "P1", {
       x: { type: "slider", value: 5, min: 0, max: 10 },

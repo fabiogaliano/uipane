@@ -90,6 +90,52 @@ describe("parseConfig", () => {
     expect(controls[2]?.placeholder).toBe("Enter name");
   });
 
+  test("slot produces correct ControlMeta with no label", () => {
+    const controls = parseConfig(
+      { matchView: { type: "slot" } },
+      "",
+    );
+
+    expect(controls).toHaveLength(1);
+    expect(controls[0]).toMatchObject({
+      type: "slot",
+      path: "matchView",
+      label: "",
+    });
+  });
+
+  test("slot uses explicit label instead of formatting key", () => {
+    const controls = parseConfig(
+      { matchView: { type: "slot", label: "Custom Label" } },
+      "",
+    );
+
+    expect(controls[0]?.label).toBe("Custom Label");
+  });
+
+  test("folder children can include slots", () => {
+    const controls = parseConfig(
+      {
+        matching: {
+          type: "folder",
+          children: {
+            statusSlot: { type: "slot" },
+            toggle: { type: "toggle", value: true },
+          },
+        },
+      },
+      "",
+    );
+
+    const folder = controls[0];
+    expect(folder?.children).toHaveLength(2);
+    expect(folder?.children?.[0]).toMatchObject({
+      type: "slot",
+      path: "matching.statusSlot",
+      label: "",
+    });
+  });
+
   test("spring and easing become transition type", () => {
     const controls = parseConfig(
       {
@@ -139,6 +185,27 @@ describe("flattenValues", () => {
     );
 
     expect(values["mode"]).toBe("fast");
+  });
+
+  test("slots are excluded from flattened values", () => {
+    const values = flattenValues(
+      {
+        x: { type: "slider", value: 5, min: 0, max: 10 },
+        mySlot: { type: "slot" },
+        group: {
+          type: "folder",
+          children: {
+            innerSlot: { type: "slot", label: "Info" },
+            y: { type: "slider", value: 3, min: 0, max: 10 },
+          },
+        },
+      },
+      "",
+    );
+
+    expect(values).toMatchObject({ x: 5, "group.y": 3 });
+    expect("mySlot" in values).toBe(false);
+    expect("group.innerSlot" in values).toBe(false);
   });
 
   test("color and text use defaults", () => {

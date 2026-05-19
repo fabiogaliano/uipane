@@ -24,6 +24,12 @@ describe("ResolvedValues type inference", () => {
     type _assertNoReset = Resolved extends { reset: unknown } ? never : true;
     const _noReset: _assertNoReset = true;
 
+    // Slots are excluded from resolved values
+    type ConfigWithSlot = Config & { mySlot: { type: "slot" } };
+    type ResolvedWithSlot = ResolvedValues<ConfigWithSlot>;
+    type _assertNoSlot = ResolvedWithSlot extends { mySlot: unknown } ? never : true;
+    const _noSlot: _assertNoSlot = true;
+
     // Slider resolves to number
     type _assertOpacity = Resolved["opacity"] extends number ? true : never;
     const _opacity: _assertOpacity = true;
@@ -42,6 +48,6 @@ describe("ResolvedValues type inference", () => {
       : never;
     const _delay: _assertDelay = true;
 
-    expect(_noReset && _opacity && _enabled && _mode && _delay).toBe(true);
+    expect(_noReset && _noSlot && _opacity && _enabled && _mode && _delay).toBe(true);
   });
 });

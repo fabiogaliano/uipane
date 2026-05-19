@@ -22,6 +22,8 @@ class PaneStoreClass {
   private activePreset = new Map<string, string | null>();
   private baseValues = new Map<string, Record<string, PaneValue>>();
   private transitionModes = new Map<string, TransitionMode>();
+  private slotNodes = new Map<string, HTMLDivElement>();
+  private slotListeners = new Map<string, Set<Listener>>();
   private activeTabName: string | null = null;
   private activeTabListeners = new Set<Listener>();
 
@@ -77,6 +79,14 @@ class PaneStoreClass {
   }
 
   unregisterPanel(id: string): void {
+    const prefix = `${id}:`;
+    for (const key of this.slotNodes.keys()) {
+      if (key.startsWith(prefix)) {
+        this.slotNodes.delete(key);
+        this.slotListeners.get(key)?.forEach((fn) => fn());
+        this.slotListeners.delete(key);
+      }
+    }
     this.panels.delete(id);
     this.listeners.delete(id);
     this.snapshots.delete(id);
@@ -134,6 +144,33 @@ class PaneStoreClass {
   subscribeGlobal(listener: Listener): () => void {
     this.globalListeners.add(listener);
     return () => this.globalListeners.delete(listener);
+  }
+
+  setSlotNode(panelId: string, path: string, node: HTMLDivElement | null): void {
+    const key = `${panelId}:${path}`;
+    if (node) {
+      if (this.slotNodes.get(key) === node) return;
+      this.slotNodes.set(key, node);
+    } else {
+      if (!this.slotNodes.has(key)) return;
+      this.slotNodes.delete(key);
+    }
+    this.slotListeners.get(key)?.forEach((fn) => fn());
+  }
+
+  getSlotNode(panelId: string, path: string): HTMLDivElement | null {
+    return this.slotNodes.get(`${panelId}:${path}`) ?? null;
+  }
+
+  subscribeSlot(panelId: string, path: string, listener: Listener): () => void {
+    const key = `${panelId}:${path}`;
+    let set = this.slotListeners.get(key);
+    if (!set) {
+      set = new Set();
+      this.slotListeners.set(key, set);
+    }
+    set.add(listener);
+    return () => set.delete(listener);
   }
 
   subscribeActions(panelId: string, listener: ActionListener): () => void {

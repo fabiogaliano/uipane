@@ -80,6 +80,8 @@ function buildResolved(
     switch (entry.type) {
       case "action":
         break;
+      case "slot":
+        break;
       case "slider":
         result[key] = flat[path] ?? entry.value;
         break;
